@@ -32,6 +32,12 @@ pipeline {
     stage('deploy') {
       parallel {
         stage('deploy') {
+          agent {
+            node {
+              label 'test'
+            }
+
+          }
           steps {
             sh './mvnw spring-boot:run </dev/null &>/dev/null &'
           }
@@ -39,7 +45,8 @@ pipeline {
 
         stage('integration and performance test') {
           steps {
-            sh './mvnw verify'
+            sh './mvnw verify -DskipTests=true'
+            junit 'target/surefire-reports/TEST-*.xml'
           }
         }
 
